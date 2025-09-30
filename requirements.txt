@@ -1,0 +1,6 @@
+ddgs
+ollama
+transformers
+torch
+accelerate
+importlib-metadata ; python_version < "3.8"
