@@ -1,0 +1,11 @@
+body {
+  font-family: Arial, sans-serif;
+}
+
+.task-item {
+  margin-bottom: 10px;
+}
+
+input[type="text"] {
+  margin-right: 5px;
+}

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-<｜begin▁of▁sentence｜>8" name="viewport" content="width=device-width, initial-scale=1">
+    <title>Portfolio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to my portfolio site!</h1>
+        {% for project in projects %}
+            <div class="project-card">
+                <h2>{{ project['name'] }}</h2>
+                <p>{{ project['description'] }}</p>
+                {% if 'image' in project %}
+                    <img src="{{ url_for('static', filename=project['image']) }}" alt="">
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

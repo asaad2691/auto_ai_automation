@@ -1,0 +1,15 @@
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+}
+
+.project-card {
+    background-color: #f2f2f2;
+    padding: 15px;
+    margin-bottom: 30px;
+    border-radius: 5px;
+}

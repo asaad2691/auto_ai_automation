@@ -1,0 +1,22 @@
+{
+    "projects": [
+        {
+            "name": "Project 1",
+            "description": "This is the first project."
+        },
+        {
+            "name": "Project 2",
+            "description": "This is the second project.",
+            "image": "project2.jpg"
+        },
+        {
+            "name": "Project 3",
+            "description": "This is the third project."
+        },
+        {
+            "name": "Project 4",
+            "description": "This is the fourth project.",
+            "image": "project4.jpg"
+        }
+    ]
+}

@@ -1,0 +1,22 @@
+<!-- --- index.html --- -->
+{% extends "layout.html" %} {% block head %} {{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> {% endblock %} {% block body %}
+<h1 class="mt-3">Task Manager</h1>
+<form method="POST" action="/add_task" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="task" required class="form-control" placeholder="Add new task...">
+        <button type="submit" class="btn btn-primary">Add Task</button>
+    </div>
+    </ul>
+    <ul id="tasks" class="list-group mb-3">
+        {% for task in tasks %}
+        <li class="list-group-item {{ 'completed' if task['completed'] else '' }}">
+            {{ task['name'] }}
+            <form method="POST" action="/complete_task" style="display: inline;">
+                <input type="hidden" name="idx" value="{{ loop.index0 }}">
+                <button type="submit" class="btn btn-outline-success">Complete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endblock %}

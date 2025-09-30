@@ -1,0 +1,21 @@
+[{
+        "image": "https://dummyimage.com/600x400/000/fff",
+        "title": "Card Title 1",
+        "description": "This is the description for Card 1."
+    },
+    {
+        "image": "https://dummyimage.com/600x400/000/fff",
+        "title": "Card Title 2",
+        "description": "This is the description for Card 2."
+    },
+    {
+        "image": "https://dummyimage.com/600x400/000/fff",
+        "title": "Card Title 3",
+        "description": "This is the description for Card 3."
+    },
+    {
+        "image": "https://dummyimage.com/600x400/000/fff",
+        "title": "Card Title 4",
+        "description": "This is the description for Card 4."
+    }
+]

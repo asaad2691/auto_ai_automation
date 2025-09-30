@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>CKEditor Word Paste Demo</title>
+    <script src="https://cdn.ckeditor.com/4.22.1/full/ckeditor.js"></script>
+</head>
+
+<body>
+    <h2>CKEditor Demo (No API Key)</h2>
+    <textarea name="editor1" id="editor1" rows="10" cols="80">
+    <p>Yahan apna Word ka text copy paste karke dekho.</p>
+  </textarea>
+
+    <button onclick="saveContent()">Save</button>
+
+    <h3>Raw HTML</h3>
+    <textarea id="rawHtml" style="width:100%;height:200px"></textarea>
+
+    <h3>Preview</h3>
+    <div id="preview" style="border:1px solid #ccc;min-height:150px;padding:10px"></div>
+
+    <script>
+        CKEDITOR.replace('editor1');
+
+        function saveContent() {
+            const data = CKEDITOR.instances.editor1.getData();
+            document.getElementById('rawHtml').value = data;
+            document.getElementById('preview').innerHTML = data;
+        }
+    </script>
+</body>
+
+</html>
