@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Flask Blog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('index') }}">Home</a> |
+        <a href="{{ url_for('about') }}">About Us</a> |
+        <a href="{{ url_for('services') }}">Services</a> |
+        <a href="{{ url_for('contact') }}">Contact Us</a> |
+        {% if 'username' in session %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+        {% endif %}
+    </nav>
+    {% block body %}{% endblock %}
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

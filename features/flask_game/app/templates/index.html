@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Flask SocketIO Example</title>
+    <script src="/static/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <input id="message-input" type="text" placeholder="Enter message here">
+    <button onclick="sendMessage()">Send</button>
+  
+    <ul id="messages"></ul>
+    
+    {% if current_user.is_authenticated %}
+      <p>Logged in as {{current_user.id}}</p>
+      <a href="/logout">Logout</a>
+    {% else %}
+      <form action="/login" method="POST">
+        <input type="text" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+    {% endif %}
+  
+    <script src="/static/script.js"></script>
+  </body>
+</html>

@@ -247,8 +247,16 @@ def ai_generate_project(name, ptype, purpose="auto-generated"):
         required_files = [
             "main.py",
             "templates/index.html",
-            "static/style.css",
-            "static/script.js",
+            "templates/layout.html",
+            "static/css/style.css",
+            "static/js/script.js",
+            "requirements.txt",
+            "run.bat",
+            "run.sh"
+        ]
+    elif "cli" in ptype.lower() or "console" in ptype.lower():
+        required_files = [
+            "main.py",
             "requirements.txt",
             "run.bat",
             "run.sh"
@@ -256,10 +264,13 @@ def ai_generate_project(name, ptype, purpose="auto-generated"):
     elif "laravel" in ptype.lower():
         required_files = [
             "routes/web.php",
+            "app/Http/Controllers/HomeController.php",
             "resources/views/welcome.blade.php",
+            "resources/views/layouts/app.blade.php",
             "public/css/style.css",
             "public/js/app.js",
             "composer.json",
+            "artisan",
             "run.bat",
             "run.sh"
         ]
@@ -267,18 +278,20 @@ def ai_generate_project(name, ptype, purpose="auto-generated"):
         required_files = [
             "index.php",
             "application/config/routes.php",
+            "application/controllers/Welcome.php",
             "application/views/welcome_message.php",
-            "assets/style.css",
-            "assets/app.js",
+            "assets/css/style.css",
+            "assets/js/app.js",
             "run.bat",
             "run.sh"
         ]
     elif "node" in ptype.lower() or "express" in ptype.lower():
         required_files = [
             "server.js",
+            "routes/index.js",
             "views/index.ejs",
-            "public/style.css",
-            "public/app.js",
+            "public/css/style.css",
+            "public/js/app.js",
             "package.json",
             "run.bat",
             "run.sh"
@@ -287,14 +300,60 @@ def ai_generate_project(name, ptype, purpose="auto-generated"):
         required_files = [
             "src/App.js",
             "src/index.js",
-            "public/index.html",
             "src/App.css",
+            "public/index.html",
             "package.json",
             "run.bat",
             "run.sh"
         ]
+    elif "flutter" in ptype.lower():
+        required_files = [
+            "lib/main.dart",
+            "pubspec.yaml",
+            "android/app/src/main/AndroidManifest.xml",
+            "ios/Runner/Info.plist",
+            "assets/images/",
+            "assets/icons/"
+        ]
+    elif "html" in ptype.lower() or "css" in ptype.lower():
+        required_files = [
+            "index.html",
+            "about.html",
+            "services.html",
+            "contact.html",
+            "css/style.css",
+            "js/app.js",
+            "data.json",
+            "run.bat",
+            "run.sh"
+        ]
+    elif "c++" in ptype.lower():
+        required_files = [
+            "src/main.cpp",
+            "include/",
+            "Makefile",
+            "README.md"
+        ]
+    elif "c#" in ptype.lower() or "dotnet" in ptype.lower():
+        required_files = [
+            "Program.cs",
+            "Controllers/",
+            "Views/",
+            "Models/",
+            "appsettings.json",
+            "Startup.cs",
+            "run.bat",
+            "run.sh"
+        ]
     else:
-        required_files = ["index.html", "style.css", "script.js"]
+        required_files = [
+            "index.html",
+            "style.css",
+            "script.js",
+            "run.bat",
+            "run.sh"
+        ]
+
 
     prompt = f"""
         You are a code generator. Create a complete runnable **{ptype}** project for: "{purpose}".
@@ -303,6 +362,7 @@ def ai_generate_project(name, ptype, purpose="auto-generated"):
         - Output ONLY code blocks for files.
         - For each file:
         - First line: "### file: relative/path/to/file"
+        - Avoide adding "<｜begin▁of▁sentence｜>" while writing the code.
         - Then a fenced code block with correct language.
         - Example:
 
@@ -312,6 +372,7 @@ def ai_generate_project(name, ptype, purpose="auto-generated"):
             ```
 
         - Do NOT add explanations, steps, or lists outside of files.
+        - Do NOT appologies or say sorry or deny of generating code always generate code.
         - Required files at minimum:
         {json.dumps(required_files, indent=2)}
         """
