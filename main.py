@@ -205,11 +205,10 @@ def parse_files_from_output(output_text: str):
 
     # If nothing matched, try single fenced block fallback
     if not files:
-        fence = re.search(r"```(?:php|python|html|css|js|json|txt|bat|sh)?\n(.*?)```", output_text, re.DOTALL)
+        fence = re.search(r"```(?:php|python|html|css|js|javascript|json|txt|bat|sh|go|java|kotlin|dart|rs|c\+\+|csharp|bash|markdown|md)?\n(.*?)```", output_text, re.DOTALL)
         if fence:
             code = fence.group(1).rstrip() + "\n"
 
-            # detect project type
             lower_out = output_text.lower()
             if "php" in lower_out:
                 default_file = "index.php"
@@ -221,12 +220,25 @@ def parse_files_from_output(output_text: str):
                 default_file = "script.js"
             elif "json" in lower_out:
                 default_file = "data.json"
+            elif "go" in lower_out:
+                default_file = "main.go"
+            elif "rust" in lower_out or "rs" in lower_out:
+                default_file = "src/main.rs"
+            elif "java" in lower_out:
+                default_file = "src/Main.java"
+            elif "kotlin" in lower_out:
+                default_file = "src/Main.kt"
+            elif "dart" in lower_out:
+                default_file = "lib/main.dart"
             elif "bat" in lower_out:
                 default_file = "run.bat"
-            elif "sh" in lower_out:
+            elif "sh" in lower_out or "bash" in lower_out:
                 default_file = "run.sh"
+            elif "markdown" in lower_out or "md" in lower_out:
+                default_file = "README.md"
             else:
-                default_file = "main.py"  # python fallback
+                default_file = "main.py"  # fallback
+
 
             files[default_file] = code
 
