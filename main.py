@@ -492,7 +492,286 @@ def cli():
         except Exception as e:
             print(f"[AI] CLI error: {e}")
 
+def gui():
+    import tkinter as tk
+    from tkinter import ttk, scrolledtext, messagebox
 
+    # --- Modern style helpers ---
+    ACCENT = "#0078d4"
+    BG = "#1e1e1e"
+    FG = "#f3f3f3"
+    SIDEBAR_BG = "#23272e"
+    TAB_BG = "#23272e"
+    BTN_BG = "#0078d4"
+    BTN_FG = "#fff"
+    ENTRY_BG = "#2d2d2d"
+    ENTRY_FG = "#f3f3f3"
+    FONT = ("Segoe UI", 11)
+    BTN_FONT = ("Segoe UI", 10, "bold")
+
+    # --- Main window ---
+    root = tk.Tk()
+    root.title("Jugaru-agent GUI")
+    root.geometry("950x600")
+    root.configure(bg=BG)
+
+    style = ttk.Style()
+    style.theme_use("clam")
+    style.configure("TNotebook", background=BG, borderwidth=0)
+    style.configure("TNotebook.Tab", background=TAB_BG, foreground=FG, padding=10, font=FONT)
+    style.map("TNotebook.Tab", background=[("selected", BG)], foreground=[("selected", ACCENT)])
+    style.configure("Sidebar.TFrame", background=SIDEBAR_BG)
+    style.configure("Sidebar.TLabel", background=SIDEBAR_BG, foreground=FG, font=FONT)
+    style.configure("Sidebar.TButton", background=SIDEBAR_BG, foreground=ACCENT, font=BTN_FONT, borderwidth=0)
+    style.configure("Modern.TButton", background=BTN_BG, foreground=BTN_FG, font=BTN_FONT, borderwidth=0, relief="flat")
+    style.map("Modern.TButton", background=[("active", "#005a9e")])
+
+    # --- Sidebar for modules ---
+    sidebar = ttk.Frame(root, style="Sidebar.TFrame", width=180)
+    sidebar.pack(side=tk.LEFT, fill=tk.Y)
+    sidebar.pack_propagate(False)
+
+    sidebar_label = ttk.Label(sidebar, text="Loaded Modules", style="Sidebar.TLabel")
+    sidebar_label.pack(pady=(20, 10))
+
+    module_listbox = tk.Listbox(sidebar, bg=SIDEBAR_BG, fg=ACCENT, font=FONT, borderwidth=0, highlightthickness=0, selectbackground=ACCENT, selectforeground=BTN_FG, activestyle="none")
+    module_listbox.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 10))
+
+    def refresh_module_list():
+        module_listbox.delete(0, tk.END)
+        if LOADED_MODULES:
+            for name in LOADED_MODULES:
+                module_listbox.insert(tk.END, name)
+        else:
+            module_listbox.insert(tk.END, "(No modules loaded)")
+            module_listbox.itemconfig(0, fg="#888")
+
+    refresh_module_list()
+
+    # --- Main notebook (tabs) ---
+    notebook = ttk.Notebook(root)
+    notebook.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=(0, 0), pady=0)
+
+    # --- Helper for modern send button ---
+    def modern_button(parent, text, command):
+        btn = tk.Button(parent, text=text, command=command, bg=BTN_BG, fg=BTN_FG, font=BTN_FONT, relief="flat", bd=0, activebackground="#005a9e", activeforeground=BTN_FG, cursor="hand2")
+        btn.configure(highlightthickness=0)
+        btn.pack(side=tk.RIGHT, padx=(10, 0), pady=8, ipadx=18, ipady=4)
+        btn.bind("<Enter>", lambda e: btn.config(bg="#005a9e"))
+        btn.bind("<Leave>", lambda e: btn.config(bg=BTN_BG))
+        return btn
+
+    # --- Chat Tab ---
+    chat_tab = ttk.Frame(notebook, style="TFrame")
+    notebook.add(chat_tab, text="Chat")
+
+    chat_output = scrolledtext.ScrolledText(chat_tab, wrap=tk.WORD, height=18, bg=BG, fg=FG, font=FONT, borderwidth=0, relief="flat", state="disabled")
+    chat_output.pack(fill=tk.BOTH, expand=True, padx=16, pady=(16, 8))
+
+    chat_input_frame = tk.Frame(chat_tab, bg=TAB_BG)
+    chat_input_frame.pack(fill=tk.X, padx=16, pady=(0, 16))
+
+    chat_input = tk.Text(chat_input_frame, height=3, bg=ENTRY_BG, fg=ENTRY_FG, font=FONT, borderwidth=0, relief="flat", insertbackground=FG)
+    chat_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10), pady=0)
+
+    def chat_send():
+        user_input = chat_input.get("1.0", tk.END).strip()
+        if not user_input:
+            return
+        chat_output.config(state="normal")
+        chat_output.insert(tk.END, f"You: {user_input}\n")
+        chat_output.see(tk.END)
+        chat_output.config(state="disabled")
+        chat_input.delete("1.0", tk.END)
+        # Simple chat logic (can be improved)
+        try:
+            if user_input.lower() in ("exit", "quit"):
+                root.destroy()
+                return
+            if user_input.lower() == "help":
+                help_msg = (
+                    "Commands:\n  auto_project <name> <ptype> \"<purpose>\"\n"
+                    "  auto_edit <project_path> \"<instructions>\"\n"
+                    "  reload_model\n  exit"
+                )
+                chat_output.config(state="normal")
+                chat_output.insert(tk.END, help_msg + "\n")
+                chat_output.config(state="disabled")
+                return
+            ai_response = ai_generate_text(user_input)
+            chat_output.config(state="normal")
+            chat_output.insert(tk.END, f"AI: {ai_response}\n")
+            chat_output.config(state="disabled")
+        except Exception as e:
+            chat_output.config(state="normal")
+            chat_output.insert(tk.END, f"[AI] Error: {e}\n")
+            chat_output.config(state="disabled")
+
+    modern_button(chat_input_frame, "Send", chat_send)
+    chat_input.bind("<Control-Return>", lambda e: (chat_send(), "break"))
+
+    # --- Auto Project Tab ---
+    project_tab = ttk.Frame(notebook, style="TFrame")
+    notebook.add(project_tab, text="Auto Project")
+
+    proj_output = scrolledtext.ScrolledText(project_tab, wrap=tk.WORD, height=12, bg=BG, fg=FG, font=FONT, borderwidth=0, relief="flat", state="disabled")
+    proj_output.pack(fill=tk.BOTH, expand=True, padx=16, pady=(16, 8))
+
+    proj_input_frame = tk.Frame(project_tab, bg=TAB_BG)
+    proj_input_frame.pack(fill=tk.X, padx=16, pady=(0, 16))
+
+    proj_input = tk.Text(proj_input_frame, height=3, bg=ENTRY_BG, fg=ENTRY_FG, font=FONT, borderwidth=0, relief="flat", insertbackground=FG)
+    proj_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10), pady=0)
+
+    def proj_send():
+        user_input = proj_input.get("1.0", tk.END).strip()
+        if not user_input:
+            return
+        proj_output.config(state="normal")
+        proj_output.insert(tk.END, f"> {user_input}\n")
+        proj_output.config(state="disabled")
+        proj_input.delete("1.0", tk.END)
+        try:
+            # Expect: <name> <ptype> "<purpose>"
+            parts = user_input.split(" ", 2)
+            if len(parts) < 3:
+                proj_output.config(state="normal")
+                proj_output.insert(tk.END, "Usage: <name> <ptype> \"<purpose>\"\n")
+                proj_output.config(state="disabled")
+                return
+            name, ptype, purpose = parts
+            ai_generate_project(name, ptype, purpose)
+            proj_output.config(state="normal")
+            proj_output.insert(tk.END, "[AI] Project generated.\n")
+            proj_output.config(state="disabled")
+        except Exception as e:
+            proj_output.config(state="normal")
+            proj_output.insert(tk.END, f"[AI] Error: {e}\n")
+            proj_output.config(state="disabled")
+
+    modern_button(proj_input_frame, "Send", proj_send)
+    proj_input.bind("<Control-Return>", lambda e: (proj_send(), "break"))
+
+    # --- Auto Edit Tab ---
+    edit_tab = ttk.Frame(notebook, style="TFrame")
+    notebook.add(edit_tab, text="Auto Edit")
+
+    edit_output = scrolledtext.ScrolledText(edit_tab, wrap=tk.WORD, height=12, bg=BG, fg=FG, font=FONT, borderwidth=0, relief="flat", state="disabled")
+    edit_output.pack(fill=tk.BOTH, expand=True, padx=16, pady=(16, 8))
+
+    edit_input_frame = tk.Frame(edit_tab, bg=TAB_BG)
+    edit_input_frame.pack(fill=tk.X, padx=16, pady=(0, 16))
+
+    edit_input = tk.Text(edit_input_frame, height=3, bg=ENTRY_BG, fg=ENTRY_FG, font=FONT, borderwidth=0, relief="flat", insertbackground=FG)
+    edit_input.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 10), pady=0)
+
+    def edit_send():
+        user_input = edit_input.get("1.0", tk.END).strip()
+        if not user_input:
+            return
+        edit_output.config(state="normal")
+        edit_output.insert(tk.END, f"> {user_input}\n")
+        edit_output.config(state="disabled")
+        edit_input.delete("1.0", tk.END)
+        try:
+            # Expect: <project_path> "<instructions>"
+            parts = user_input.split(" ", 1)
+            if len(parts) < 2:
+                edit_output.config(state="normal")
+                edit_output.insert(tk.END, "Usage: <project_path> \"<instructions>\"\n")
+                edit_output.config(state="disabled")
+                return
+            path, instr = parts
+            ai_edit_project(path, instr)
+            edit_output.config(state="normal")
+            edit_output.insert(tk.END, "[AI] Project edited.\n")
+            edit_output.config(state="disabled")
+        except Exception as e:
+            edit_output.config(state="normal")
+            edit_output.insert(tk.END, f"[AI] Error: {e}\n")
+            edit_output.config(state="disabled")
+
+    modern_button(edit_input_frame, "Send", edit_send)
+    edit_input.bind("<Control-Return>", lambda e: (edit_send(), "break"))
+
+    # --- Module Tab (for running modules) ---
+    module_tabs = {}
+
+    def open_module_tab(module_name):
+        if module_name in module_tabs:
+            notebook.select(module_tabs[module_name])
+            return
+        mod_tab = ttk.Frame(notebook, style="TFrame")
+        notebook.add(mod_tab, text=f"Module: {module_name}")
+        module_tabs[module_name] = mod_tab
+
+        mod_output = scrolledtext.ScrolledText(mod_tab, wrap=tk.WORD, height=12, bg=BG, fg=FG, font=FONT, borderwidth=0, relief="flat", state="normal")
+        mod_output.pack(fill=tk.BOTH, expand=True, padx=16, pady=(16, 8))
+        mod_output.insert(tk.END, f"[AI] Running module '{module_name}'...\n")
+        mod_output.config(state="disabled")
+
+        def run_mod():
+            mod_output.config(state="normal")
+            mod_output.insert(tk.END, f"[AI] ▶ Running '{module_name}'...\n")
+            mod_output.config(state="disabled")
+            try:
+                result = None
+                if module_name in LOADED_MODULES:
+                    mod = LOADED_MODULES[module_name]
+                    if hasattr(mod, "run"):
+                        result = mod.run()
+                mod_output.config(state="normal")
+                if result:
+                    mod_output.insert(tk.END, f"[{module_name}] {result}\n")
+                else:
+                    mod_output.insert(tk.END, f"[AI] No output from module.\n")
+                mod_output.config(state="disabled")
+            except Exception as e:
+                mod_output.config(state="normal")
+                mod_output.insert(tk.END, f"[AI] Error: {e}\n")
+                mod_output.config(state="disabled")
+
+        modern_button(mod_tab, "Run Again", run_mod)
+        notebook.select(mod_tab)
+        run_mod()
+
+    def on_module_select(event):
+        selection = module_listbox.curselection()
+        if not selection:
+            return
+        idx = selection[0]
+        module_name = module_listbox.get(idx)
+        if module_name.startswith("("):
+            return
+        open_module_tab(module_name)
+
+    module_listbox.bind("<<ListboxSelect>>", on_module_select)
+
+    # --- Add Load Module Button ---
+    def load_module_popup():
+        popup = tk.Toplevel(root)
+        popup.title("Load Module")
+        popup.geometry("350x120")
+        popup.configure(bg=BG)
+        tk.Label(popup, text="Module name:", bg=BG, fg=FG, font=FONT).pack(pady=(18, 4))
+        entry = tk.Entry(popup, bg=ENTRY_BG, fg=ENTRY_FG, font=FONT, relief="flat", insertbackground=FG)
+        entry.pack(fill=tk.X, padx=24, pady=2)
+        def do_load():
+            name = entry.get().strip()
+            if not name:
+                return
+            load_module(name)
+            refresh_module_list()
+            popup.destroy()
+        modern_button(popup, "Load", do_load)
+        entry.focus_set()
+
+    modern_button(sidebar, "Load Module", load_module_popup)
+
+    # --- Initial refresh ---
+    refresh_module_list()
+
+    root.mainloop()
 
 # ---------- Project editing ----------
 def ai_edit_project(project_path: str, edit_instructions: str):
@@ -586,7 +865,6 @@ def save_chat_history(history):
 
 
 
-
 def web_search(query, max_results=5):
     """Generic web search that returns clean titles + snippets."""
     try:
@@ -604,7 +882,7 @@ def web_search(query, max_results=5):
 
 
 def needs_web_search(user_input, response):
-    # If user is asking about real-time info (weather, news, time, price, etc.)
+    # If user is asking about real-time info (weather, news, time, price, stock, current, latest, time, score)
     realtime_keywords = ["weather", "today", "news", "price", "stock", "current", "latest", "time", "score"]
     if any(word in user_input.lower() for word in realtime_keywords):
         return True
@@ -936,4 +1214,6 @@ def cli():
             print(f"[AI] CLI error: {e}")
 
 if __name__ == "__main__":
-    cli()
+    # Uncomment one of the following lines to use CLI or GUI
+    # cli()
+    gui()

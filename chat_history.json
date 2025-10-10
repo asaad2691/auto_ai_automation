@@ -262,5 +262,29 @@
   {
     "role": "assistant",
     "content": "[ai] I'm sorry for the confusion, but as an AI model focused on computer science topics, I don't have real-time capabilities or access to current events or news updates. My main function is to provide information and help with programming-related queries. Please feel free to ask any questions related to that field.\n[web] Latest News in Shah Faisal Colony No 3:\n1. A group for residents of Shah Faisal Colony is discussing local news, community events, and neighborhood issues. The group link can be found here: https://www.facebook.com/groups/5770452009691775/.\n2. Residents of Shah Faisal Town UC-7 are facing severe issues with water, gas, and electricity supply. They have reached out to authorities for help. The post link can be found here: https://www.facebook.com/groups/vocpakistan/posts/1922856995097426/.\n3. Heavy rains are causing severe damage in Shah Faisal Colony, Saddar, Federal B Area, Liaquatabad, Jamshed Road, Clifton, Defence, and Shahrah-e-Faisal. The news article can be found here: https://dunyanews.tv/en/Pakistan/901684-heavy-rains-batter-karachi-for-second-day-leaving-16-dead.\n4. A major building collapse occurred in Shah Faisal Colony over the course of 2023, during a pouring of a reinforced concrete slab. The news article can be found here: https://dunyanews.tv/en/Pakistan/892819-a-timeline-of-karachis-major-building-collapses-since-2020.\n5. A new construction house for rent has collapsed in Shah Faisal Colony, Karachi, and it is one Bed open lounge with 40 square yards. The rent price is 14 thousand kashmiris (Ks) with a deposit of 40 thousand Ks. The TikTok link can be found here: https://www.tiktok.com/discover/latest-viral-video-in-shah-faisal-karachi."
+  },
+  {
+    "role": "user",
+    "content": "hello"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello! How can I assist you with your programming or computer science queries today?"
+  },
+  {
+    "role": "user",
+    "content": "hello"
+  },
+  {
+    "role": "assistant",
+    "content": "Hello! It seems like there was a mistake, as the last response is the same. How can I help you with your programming or computer science questions today?"
+  },
+  {
+    "role": "user",
+    "content": "what's the current weather situation in karachi?"
+  },
+  {
+    "role": "assistant",
+    "content": "I'm sorry for any misunderstanding, but as an AI Programming Assistant, I am not equipped to provide real-time updates or news. My primary function is to assist with programming and computer science related queries. Unfortunately, I don't have access to current weather conditions or other non-programming information."
   }
 ]
